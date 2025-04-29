@@ -1,0 +1,200 @@
+let selectedCartons = [];
+let occupiedCartons = new Set();
+let inscriptions = [];
+let total = 0;
+
+const SUPABASE_URL = 'https://fhupnzsulpvhobkumtae.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXBuenN1bHB2aG9ia3VtdGFlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU3MDc1NTgsImV4cCI6MjA2MTI4MzU1OH0.-5rdAm5eClxOubV-7Jl1IyVrI1Qi4u1_nA3skgufxSc';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Función para establecer la fecha actual como la única opción
+function setCurrentDay() {
+  const today = new Date();
+  const dayString = `${today.getDate()} ${today.toLocaleString('default', { month: 'long' })}`;
+  
+  const select = document.getElementById("day-select");
+  select.innerHTML = ''; // Limpiar las opciones previas
+
+  const option = document.createElement("option");
+  option.value = dayString;
+  option.textContent = dayString;
+
+  select.appendChild(option); // Agregar la nueva opción
+}
+
+// Llamamos a setCurrentDay cuando se carga la página
+window.onload = setCurrentDay;
+
+function showInscription() {
+  hideAll();
+  document.getElementById("inscription-window").classList.remove("hidden");
+}
+
+function showAdmin() {
+  hideAll();
+  document.getElementById("admin-window").classList.remove("hidden");
+}
+
+function goToCartons() {
+  hideAll();
+  document.getElementById("cartons-window").classList.remove("hidden");
+  generateCartons();
+}
+
+function goToPayment() {
+  if (selectedCartons.length === 0) {
+    alert("Debes seleccionar al menos un cartón.");
+    return;
+  }
+  hideAll();
+  document.getElementById("payment-window").classList.remove("hidden");
+  document.getElementById("final-amount").textContent = total;
+}
+
+function generateCartons() {
+  const container = document.getElementById("cartons-container");
+  container.innerHTML = "";
+  for (let i = 1; i <= 3000; i++) {
+    const div = document.createElement("div");
+    div.className = "carton";
+    div.textContent = i;
+    if (occupiedCartons.has(i)) {
+      div.classList.add("occupied");
+    } else {
+      div.onclick = () => toggleCarton(i, div);
+    }
+    container.appendChild(div);
+  }
+}
+
+function toggleCarton(num, el) {
+  if (selectedCartons.includes(num)) {
+    selectedCartons = selectedCartons.filter(n => n !== num);
+    el.classList.remove("selected");
+    total -= 5;
+  } else {
+    selectedCartons.push(num);
+    el.classList.add("selected");
+    total += 5;
+  }
+  document.getElementById("total").textContent = total;
+}
+
+function hideAll() {
+  document.querySelectorAll("body > div").forEach(d => d.classList.add("hidden"));
+}
+
+function checkAdmin() {
+  const pass = document.getElementById("admin-pass").value;
+  if (pass === "admin123") {
+    document.getElementById("admin-panel").classList.remove("hidden");
+    document.getElementById("sold-count").textContent = occupiedCartons.size;
+    document.getElementById("clients-count").textContent = inscriptions.length;
+    showProofs();
+  } else {
+    alert("Clave incorrecta");
+  }
+}
+
+function showProofs() {
+  let proofsContainer = document.getElementById("proofs-container");
+  proofsContainer.innerHTML = "<h3>Comprobantes:</h3>";
+
+  inscriptions.forEach((inscription, index) => {
+    const div = document.createElement("div");
+    div.style.marginBottom = "15px";
+    div.innerHTML = ` 
+      <p><strong>${index + 1}. ${inscription.name}</strong> - ${inscription.phone}</p>
+      <img src="${inscription.proofURL}" alt="Comprobante" onclick="viewImage('${inscription.proofURL}')" />
+    `;
+    proofsContainer.appendChild(div);
+  });
+}
+
+function resetData() {
+  if (confirm("¿Seguro que deseas reiniciar los cartones?")) {
+    occupiedCartons.clear();
+    inscriptions = [];
+    alert("Datos reiniciados.");
+    hideAll();
+    document.getElementById("main-container").classList.remove("hidden");
+  }
+}
+async function saveInscription() {
+  const name = document.getElementById("name").value;
+  const phone = document.getElementById("phone").value;
+  const ref = document.getElementById("referrer").value;
+  const day = document.getElementById("day-select").value;
+  const proofFile = document.getElementById("proof").files[0];
+
+  if (!proofFile) {
+    alert("Debes subir un comprobante.");
+    return;
+  }
+
+  const fileName = `${Date.now()}_${proofFile.name}`;
+  const { data, error } = await supabase.storage
+    .from('comprobantes') // <-- nombre exacto de tu bucket
+    .upload(fileName, proofFile);
+
+  if (error) {
+    alert("Error subiendo el comprobante.");
+    console.error(error);
+    return;
+  }
+
+  const { data: publicUrlData } = supabase.storage
+    .from('comprobantes')
+    .getPublicUrl(fileName);
+
+  const proofURL = publicUrlData.publicUrl;
+
+  occupiedCartons = new Set([...occupiedCartons, ...selectedCartons]);
+
+  inscriptions.push({
+    name,
+    phone,
+    ref,
+    day,
+    cartons: [...selectedCartons],
+    total,
+    proofURL
+  });
+
+  alert("Inscripción guardada exitosamente.");
+  goHome();
+}
+
+function sendToWhatsApp() {
+  const name = document.getElementById("name").value;
+  const phone = document.getElementById("phone").value;
+  const ref = document.getElementById("referrer").value;
+  const day = document.getElementById("day-select").value;
+
+  const msg = `*Nueva inscripción de Bingo*\n
+*Nombre:* ${name}
+*Teléfono:* ${phone}
+*Referido por:* ${ref}
+*Día:* ${day}
+*Cartones:* ${selectedCartons.join(', ')}
+*Total:* $${total}`;
+
+  const encoded = encodeURIComponent(msg);
+  const url = `https://wa.me/584123714136?text=${encoded}`;
+  window.open(url, "_blank");
+}
+
+// Mostrar imagen grande (opcional, mejora visual)
+function viewImage(url) {
+  const win = window.open();
+  win.document.write(`<img src="${url}" style="width:100%">`);
+}
+
+function goHome() {
+  hideAll();
+  document.getElementById("main-container").classList.remove("hidden");
+  document.getElementById("form").reset();
+  selectedCartons = [];
+  total = 0;
+  document.getElementById("total").textContent = total;
+}
