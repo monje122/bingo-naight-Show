@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bingo Web</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="main-container">
+    <header>
+      <img src="https://i.ibb.co/VpHR2DwV/logo-png.png" alt="logo-png" id="logo">
+      <h2>Reglas de uso</h2>
+    </header>
+    <div class="botones">
+      <button onclick="showInscription()">Inscribirse</button>
+      <button onclick="showAdmin()">Administrador</button>
+    </div>
+  </div>
+
+  <!-- Inscripción -->
+  <div id="inscription-window" class="hidden">
+    <h2>Inscripción</h2>
+    <form id="form">
+      <input type="text" id="name" placeholder="Nombre completo" required />
+      <input type="text" id="phone" placeholder="Teléfono" required />
+      <input type="text" id="referrer" placeholder="¿Quién te refirió?" />
+      <button type="button" onclick="goToCartons()">Siguiente</button>
+    </form>
+  </div>
+
+  <!-- Admin -->
+  <div id="admin-window" class="hidden">
+    <h2>Acceso Administrador</h2>
+    <input type="password" id="admin-pass" placeholder="Clave de acceso" />
+    <button onclick="checkAdmin()">Entrar</button>
+    <div id="admin-panel" class="hidden">
+      <p><strong>Cartones vendidos:</strong> <span id="sold-count">0</span></p>
+      <p><strong>Clientes inscritos:</strong> <span id="clients-count">0</span></p>
+      <div id="proofs-container"></div>
+      <button onclick="resetData()">Reiniciar Cartones</button>
+      <button onclick="goHome()" style="margin-top: 10px;">Inicio</button> <!-- <-- botón nuevo -->
+</div>
+
+    </div>
+
+  <!-- Cartones -->
+  <div id="cartons-window" class="hidden">
+    <h2>Escoge tu cartón favorito</h2>
+    <label>Selecciona el día:</label>
+    <select id="day-select">
+      <option value="26 abril">26 de abril</option>
+      <option value="27 abril">27 de abril</option>
+    </select>
+    <div id="cartons-container"></div>
+    <p>Total: $<span id="total">0</span></p>
+    <button onclick="goToPayment()">Continuar</button>
+  </div>
+
+  <!-- Pago -->
+  <div id="payment-window" class="hidden">
+    <h2>Pago Móvil</h2>
+    <p>Realiza tu pago a los siguientes datos:</p>
+    <ul>
+      <li><strong>Teléfono:</strong> 0412-3714136</li>
+      <li><strong>Cédula:</strong> 26740060</li>
+      <li><strong>Banco:</strong> Mercantil</li>
+    </ul>
+    <p>Total a pagar: $<span id="final-amount">0</span></p>
+    <label for="proof">Sube el comprobante de pago:</label>
+    <input type="file" id="proof"
+           accept="image/*" />
+    <button onclick="sendToWhatsApp()">Enviar por WhatsApp</button>
+    <button onclick="goHome()" style="margin-top: 10px;">Inicio</button> 
+  </div>
+<div style="display: flex; gap: 10px; margin-top: 15px;">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="script.js"></script>
+</body>
+</html>
