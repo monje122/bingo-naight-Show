@@ -1,0 +1,136 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #853ce7, #e0f7fa);
+  color: #333;
+}
+
+.hidden {
+  display: none;
+}
+
+#main-container,
+#inscription-window,
+#admin-window,
+#cartons-window,
+#payment-window {
+  max-width: 500px;
+  margin: 40px auto;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 30px 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+header {
+  text-align: center;
+}
+
+#logo {
+  display: block;
+  margin: 20px auto;
+  width: 150px;
+}
+
+h2 {
+  text-align: center;
+  color: #00695c;
+}
+
+p, li, label {
+  font-size: 16px;
+}
+
+.botones {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.botones button,
+button {
+  padding: 12px;
+  background-color: #00796b;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background-color: #004d40;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  font-size: 15px;
+  border: 1px solid #bbb;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+#cartons-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 20px 0;
+}
+
+.carton {
+  width: 42px;
+  height: 42px;
+  background-color: #c8e6c9;
+  border-radius: 6px;
+  text-align: center;
+  line-height: 42px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.carton:hover {
+  transform: scale(1.05);
+}
+
+.carton.selected {
+  background-color: gold;
+  color: #000;
+}
+
+.carton.occupied {
+  background-color: #ef9a9a;
+  cursor: not-allowed;
+}
+
+ul {
+  padding-left: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#proofs-container img {
+  margin-top: 8px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  width: 150px;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  #cartons-container {
+    max-width: 100%;
+  }
+
+  .carton {
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
+    font-size: 14px;
+  }
+}
