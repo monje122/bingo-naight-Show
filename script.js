@@ -147,7 +147,7 @@ data.forEach((inscription, index) => {
     div.style.marginBottom = "15px";
     div.innerHTML = ` 
       <p><strong>${index + 1}. ${inscription.name}</strong> - ${inscription.phone}</p>
-      <img src="${inscription.proofURL}" alt="Comprobante" onclick="viewImage('${inscription.proofURL}')" />
+      <img src="${inscription.proof_url}" alt="Comprobante" onclick="viewImage('${inscription.proof_url}')" />
     `;
     proofsContainer.appendChild(div);
   });
