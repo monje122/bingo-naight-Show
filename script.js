@@ -121,17 +121,27 @@ function checkAdmin() {
   if (pass === "admin123") {
     document.getElementById("admin-panel").classList.remove("hidden");
     document.getElementById("sold-count").textContent = occupiedCartons.size;
-    document.getElementById("clients-count").textContent = inscriptions.length;
+    fetchClientCount();
     showProofs();
   } else {
     alert("Clave incorrecta");
   }
 }
 
-function showProofs() {
+async function showProofs() {
   let proofsContainer = document.getElementById("proofs-container");
   proofsContainer.innerHTML = "<h3>Comprobantes:</h3>";
 
+  const { data, error } = await supabase
+    .from('inscripciones')
+    .select('*')
+    .order('id', { ascending: false });
+
+  if (error) {
+    console.error("Error al obtener inscripciones:", error.message);
+    proofsContainer.innerHTML += "<p>Error cargando comprobantes.</p>";
+    return;
+  }
   inscriptions.forEach((inscription, index) => {
     const div = document.createElement("div");
     div.style.marginBottom = "15px";
@@ -141,6 +151,17 @@ function showProofs() {
     `;
     proofsContainer.appendChild(div);
   });
+}
+async function fetchClientCount() {
+  const { count, error } = await supabase
+    .from('inscripciones')
+    .select('*', { count: 'exact', head: true });
+
+  if (!error) {
+    document.getElementById("clients-count").textContent = count;
+  } else {
+    console.error("Error obteniendo el conteo de clientes:", error.message);
+  }
 }
 
 function resetData() {
