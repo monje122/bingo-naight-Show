@@ -142,7 +142,7 @@ async function showProofs() {
     proofsContainer.innerHTML += "<p>Error cargando comprobantes.</p>";
     return;
   }
-  data.forEach((inscription, index) => {
+inscriptions.forEach((inscription, index) => {
     const div = document.createElement("div");
     div.style.marginBottom = "15px";
     div.innerHTML = ` 
