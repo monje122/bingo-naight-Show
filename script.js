@@ -161,8 +161,10 @@ async function saveInscription() {
     proofURL
   });
 
-  alert("Inscripción guardada exitosamente.");
-  goHome();
+alert("Inscripción guardada exitosamente.");
+sendToWhatsApp(); // <- añadir esta línea
+goHome();
+
 }
 
 function sendToWhatsApp() {
