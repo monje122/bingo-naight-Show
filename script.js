@@ -21,9 +21,41 @@ function setCurrentDay() {
 
   select.appendChild(option); // Agregar la nueva opción
 }
+// Recupera los cartones ocupados desde la base de datos
+async function fetchOccupiedCartons() {
+  const { data, error } = await supabase
+    .from('inscripciones')
+    .select('cartons');  // Selecciona la columna "cartons" de todas las inscripciones
 
-// Llamamos a setCurrentDay cuando se carga la página
-window.onload = setCurrentDay;
+  if (error) {
+    console.error("Error al obtener los cartones ocupados:", error.message);
+    return;
+  }
+
+  // Unifica todos los cartones ocupados en un solo conjunto
+  occupiedCartons = new Set(data.flatMap(inscription => inscription.cartons));
+
+  // Luego, al generar los cartones, puedes verificar si están ocupados
+  generateCartons();
+}
+
+// Al cargar la página, establece el día y recupera los cartones ocupados
+window.onload = function () {
+  setCurrentDay();
+  fetchOccupiedCartons();
+  supabase
+  .channel('inscripciones-changes')
+  .on(
+    'postgres_changes',
+    { event: '*', schema: 'public', table: 'inscripciones' },
+    payload => {
+      console.log('Cambio detectado en inscripciones:', payload);
+      fetchOccupiedCartons(); // <-- vuelve a consultar cartones ocupados
+    }
+  )
+  .subscribe();
+};
+
 
 function showInscription() {
   hideAll();
