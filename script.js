@@ -148,6 +148,24 @@ async function saveInscription() {
     .getPublicUrl(fileName);
 
   const proofURL = publicUrlData.publicUrl;
+   // Aquí insertamos en la base de datos
+  const { error: insertError } = await supabase
+    .from('inscripciones')
+    .insert([{
+      name,
+      phone,
+      referrer: ref,
+      day,
+      cartons: selectedCartons,
+      total,
+      proof_url: proofURL
+    }]);
+
+  if (insertError) {
+    console.error("Error al guardar en la base de datos:", insertError.message);
+    alert("Hubo un problema guardando la inscripción en la base de datos: " + insertError.message);
+    return;
+  }
 
   occupiedCartons = new Set([...occupiedCartons, ...selectedCartons]);
 
