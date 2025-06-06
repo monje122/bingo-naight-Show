@@ -287,7 +287,7 @@ async function loginAdmin() {
 
   // Usuario autenticado correctamente
   alert("Bienvenido, Admin");
-  document.getElementById("admin-panel").classList.remove("hidden");
+  document.getElementById("admin-window").classList.remove("hidden");
   document.getElementById("sold-count").textContent = occupiedCartons.size;
   fetchClientCount();
   showProofs();
