@@ -31,10 +31,11 @@
 
   <!-- Admin -->
   <div id="admin-window" class="hidden">
-    <h2>Acceso Administrador</h2>
-    <input type="password" id="admin-pass" placeholder="Clave de acceso" />
-    <button onclick="checkAdmin()">Entrar</button>
-    <div id="admin-panel" class="hidden">
+  <h2>Acceso Administrador</h2>
+<input type="email" id="admin-email" placeholder="Correo electrónico" />
+<input type="password" id="admin-password" placeholder="Contraseña" />
+<button onclick="loginAdmin()">Entrar</button>
+
       <p><strong>Cartones vendidos:</strong> <span id="sold-count">0</span></p>
       <p><strong>Clientes inscritos:</strong> <span id="clients-count">0</span></p>
       <div id="proofs-container"></div>
