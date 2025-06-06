@@ -195,7 +195,7 @@ async function saveInscription() {
     console.error(error);
     return;
   }
-
+console.log("Archivo subido con éxito:", data);
   const { data: publicUrlData } = supabase.storage
     .from('comprobantes')
     .getPublicUrl(fileName);
@@ -270,4 +270,30 @@ function goHome() {
   selectedCartons = [];
   total = 0;
   document.getElementById("total").textContent = total;
+}
+async function loginAdmin() {
+  const email = document.getElementById("admin-email").value;
+  const password = document.getElementById("admin-password").value;
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    alert("Acceso denegado: " + error.message);
+    return;
+  }
+
+  // Usuario autenticado correctamente
+  alert("Bienvenido, Admin");
+  document.getElementById("admin-panel").classList.remove("hidden");
+  document.getElementById("sold-count").textContent = occupiedCartons.size;
+  fetchClientCount();
+  showProofs();
+}
+async function logout() {
+  await supabase.auth.signOut();
+  alert("Sesión cerrada");
+  goHome();
 }
